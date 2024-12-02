@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import joblib
 import uvicorn
@@ -6,8 +7,17 @@ import uvicorn
 # Inicializar o app FastAPI
 app = FastAPI()
 
+# Adicione o mddleware CORS ao app
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Carregar o modelo com joblib
-modelo = joblib.load('app/models/music_geral.robson')
+modelo = joblib.load('models/music_geral.robson')
 
 # Modelo de dados para receber o texto
 class TextoEntrada(BaseModel):
@@ -25,4 +35,4 @@ async def realizar_predicao(dados: TextoEntrada):
 
 # Código para rodar o servidor com uvicorn diretamente no script
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main_standalone:app", host="0.0.0.0", port=8000, reload=True)
